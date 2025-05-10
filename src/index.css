@@ -1,0 +1,417 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+
+    --radius: 0.75rem;
+    
+    /* Sidebar específico */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-primary: 221.2 83.2% 53.3%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 221.2 83.2% 53.3%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.5% 48%;
+    
+    /* Sidebar específico */
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 217.2 91.2% 59.8%;
+    --sidebar-primary-foreground: 222.2 47.4% 11.2%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 224.3 76.5% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+      'Open Sans', 'Helvetica Neue', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+  }
+  
+  .glass-card {
+    @apply bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10;
+  }
+}
+
+/* For WebKit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted dark:bg-muted/30 rounded-lg;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/50 hover:bg-muted-foreground/70 rounded-lg transition-colors;
+}
+
+/* Custom scrollbar for modals and dialogs */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent rounded-lg;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 hover:bg-muted-foreground/50 rounded-full transition-colors;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted-foreground) transparent;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted-foreground) var(--muted);
+}
+
+/* Apply specific styles for mobile devices */
+@media (max-width: 640px) {
+  .recharts-wrapper, .recharts-surface {
+    width: 100% !important;
+    height: auto !important;
+  }
+  
+  /* Adjust tables for small screens */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  /* Adjust form inputs for touch-friendly experience */
+  input, select, button {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+  
+  /* Increase hit area for mobile buttons */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Force no horizontal scrolling on transaction items */
+  .transaction-item {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* Card de diálogo responsivo */
+  .responsive-dialog {
+    width: 90vw !important;
+    max-width: 100% !important;
+  }
+  
+  /* Adaptações para componentes do ShadCn */
+  .tabs-responsive [role="tablist"] {
+    @apply grid grid-cols-2 w-full;
+  }
+  
+  /* Ajustes específicos para cartões de transação */
+  .transaction-card {
+    @apply w-full rounded-lg p-4 flex flex-col gap-2 bg-card border shadow-sm hover:shadow transition-shadow dark:border-border;
+  }
+  
+  .transaction-details {
+    @apply flex flex-col gap-3 w-full;
+  }
+  
+  .transaction-info {
+    @apply flex flex-wrap items-center justify-between gap-2;
+  }
+  
+  .transaction-meta {
+    @apply flex flex-wrap items-center gap-2;
+  }
+  
+  .transaction-actions {
+    @apply flex justify-between items-center w-full mt-2 pt-2 border-t dark:border-border;
+  }
+  
+  /* Ajustes no espaçamento de cards e conteúdos */
+  .card-header-mobile {
+    @apply p-3 pb-0; 
+  }
+  
+  .card-content-mobile {
+    @apply p-3;
+  }
+  
+  /* Melhorias específicas para Tabs em dispositivos móveis */
+  [role="tablist"] {
+    width: 100%;
+  }
+  
+  [role="tablist"] button {
+    width: 100%;
+    white-space: normal;
+    text-align: left;
+    justify-content: flex-start;
+    padding: 8px 10px;
+  }
+  
+  /* Quando em modo vertical para mobile */
+  .flex-col[role="tablist"] button {
+    margin-bottom: 2px;
+  }
+  
+  /* Quando tem 3 ou mais abas em mobile */
+  [role="tablist"].mobile-overflow {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    padding-bottom: 5px; /* Espaço para scroll bar */
+  }
+  
+  [role="tablist"].mobile-overflow button {
+    flex-shrink: 0;
+    min-width: auto;
+    white-space: nowrap;
+  }
+}
+
+/* Animation classes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-in-out;
+}
+
+/* Melhorias de estilo para transações */
+.transaction-card {
+  @apply w-full rounded-lg p-4 flex flex-col gap-2 bg-card border shadow-sm hover:shadow transition-shadow dark:border-border;
+}
+
+.transaction-details {
+  @apply flex flex-col gap-3 w-full;
+}
+
+.transaction-header {
+  @apply flex flex-wrap items-center justify-between;
+}
+
+.transaction-title {
+  @apply font-medium text-lg;
+}
+
+.transaction-amount {
+  @apply font-semibold text-lg;
+}
+
+.transaction-info {
+  @apply flex flex-wrap items-center justify-between gap-2;
+}
+
+.transaction-meta {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.transaction-tag {
+  @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.transaction-actions {
+  @apply flex justify-between items-center w-full mt-2 pt-2 border-t dark:border-border;
+}
+
+.income-tag {
+  @apply bg-finance-income/20 text-finance-income dark:bg-finance-income/30;
+}
+
+.expense-tag {
+  @apply bg-finance-expense/20 text-finance-expense dark:bg-finance-expense/30;
+}
+
+.credit-tag {
+  @apply bg-finance-credit/20 text-finance-credit dark:bg-finance-credit/30;
+}
+
+.investment-tag {
+  @apply bg-finance-investment/20 text-finance-investment dark:bg-finance-investment/30;
+}
+
+.category-tag {
+  @apply bg-secondary text-secondary-foreground dark:bg-secondary/80;
+}
+
+.installment-tag {
+  @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400;
+}
+
+.pending-tag {
+  @apply bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400;
+}
+
+.paid-tag {
+  @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
+}
+
+/* Classes utilitárias adicionais para responsividade */
+@media (max-width: 768px) {
+  .mobile-p-smaller {
+    padding: 0.75rem !important;
+  }
+  
+  .mobile-text-sm {
+    font-size: 0.875rem !important;
+  }
+  
+  .mobile-hidden {
+    display: none !important;
+  }
+  
+  .mobile-flex-col {
+    flex-direction: column !important;
+  }
+  
+  .mobile-w-full {
+    width: 100% !important;
+  }
+  
+  .mobile-mt-2 {
+    margin-top: 0.5rem !important;
+  }
+  
+  .mobile-gap-1 {
+    gap: 0.25rem !important;
+  }
+  
+  .mobile-overflow-auto {
+    overflow: auto !important;
+  }
+  
+  /* Novas classes para tabs responsivos */
+  .mobile-tab-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .mobile-tab-item {
+    width: 100%;
+    white-space: normal;
+    text-align: left;
+    justify-content: flex-start;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  /* Para tabs que devem ficar na horizontal mesmo em mobile */
+  .mobile-tabs-horizontal {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .mobile-tabs-horizontal::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .mobile-tabs-horizontal > * {
+    flex: 0 0 auto;
+  }
+}

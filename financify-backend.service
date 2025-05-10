@@ -1,0 +1,23 @@
+[Unit]
+Description=Financify Easy Track Backend Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/financify-easy-track
+ExecStartPre=/usr/bin/npm install
+ExecStartPre=/usr/bin/npm run build
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=financify-backend
+Environment=NODE_ENV=production
+Environment=PORT=8080
+Environment=SSL_CERT_PATH=/etc/letsencrypt/live/geraldo.killers.com.br/fullchain.pem
+Environment=SSL_KEY_PATH=/etc/letsencrypt/live/geraldo.killers.com.br/privkey.pem
+
+[Install]
+WantedBy=multi-user.target 

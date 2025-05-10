@@ -1,0 +1,19 @@
+
+<svg width="300" height="100" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+    .text {
+      font-family: 'Poppins', sans-serif;
+      font-size: 42px;
+      font-weight: 600;
+      fill: url(#gradient);
+    }
+  </style>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7A4FFF" />
+      <stop offset="100%" stop-color="#9B87F5" />
+    </linearGradient>
+  </defs>
+  <text x="0" y="60" class="text">Financify</text>
+</svg>
