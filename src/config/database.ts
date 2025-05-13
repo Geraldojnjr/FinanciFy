@@ -19,7 +19,7 @@ export interface DatabaseConfig {
 export const databaseConfig: DatabaseConfig = {
   type: (import.meta.env.VITE_DATABASE_TYPE || 'mariadb') as DatabaseType,
   mariadb: {
-    host: import.meta.env.VITE_MARIADB_HOST || 'localhost',
+    host: import.meta.env.VITE_MARIADB_HOST || 'mariadb',
     port: parseInt(import.meta.env.VITE_MARIADB_PORT || '3306'),
     user: import.meta.env.VITE_MARIADB_USER || '',
     password: import.meta.env.VITE_MARIADB_PASSWORD || '',

@@ -69,9 +69,9 @@ export class InvestmentService {
               initialDate = investment.initial_date;
             } else if (typeof investment.initial_date === 'string') {
               // Se for uma string, tentar converter para Date
-              // Remover o 'T00:00:00' se existir
-              const cleanDate = investment.initial_date.replace('T00:00:00', '');
-              initialDate = new Date(cleanDate);
+              // Remover a parte do tempo se existir
+              const dateStr = investment.initial_date.split('T')[0];
+              initialDate = new Date(dateStr);
               
               if (isNaN(initialDate.getTime())) {
                 console.error('Formato de data inicial inválido:', investment.initial_date);
@@ -94,9 +94,9 @@ export class InvestmentService {
               dueDate = investment.due_date;
             } else if (typeof investment.due_date === 'string') {
               // Se for uma string, tentar converter para Date
-              // Remover o 'T00:00:00' se existir
-              const cleanDate = investment.due_date.replace('T00:00:00', '');
-              dueDate = new Date(cleanDate);
+              // Remover a parte do tempo se existir
+              const dateStr = investment.due_date.split('T')[0];
+              dueDate = new Date(dateStr);
               
               if (isNaN(dueDate.getTime())) {
                 console.error('Formato de data de vencimento inválido:', investment.due_date);
@@ -266,5 +266,21 @@ export class InvestmentService {
       console.error('Error deleting investment:', error);
       throw error;
     }
+  }
+
+  // Função utilitária para converter para YYYY-MM-DD
+  private toDateString(date: Date | string | undefined) {
+    if (!date) return null;
+    if (typeof date === 'string') {
+      // Se for uma string ISO, converter para YYYY-MM-DD
+      if (date.includes('T')) {
+        return date.split('T')[0];
+      }
+      return date;
+    }
+    if (date instanceof Date && !isNaN(date.getTime())) {
+      return date.toISOString().split('T')[0];
+    }
+    return null;
   }
 }

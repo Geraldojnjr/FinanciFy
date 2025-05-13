@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const authRoutes = require('./routes/auth');
 const dataRoutes = require('./routes/data');
@@ -20,7 +21,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://192.168.1.21:8080', 'https://geraldo.killers.com.br:9930'],
+  origin: ['http://localhost:8090', 'http://192.168.1.24:8090', 'https://geraldo.killers.com.br:9930'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-DB-Config'],
   credentials: true
@@ -53,18 +54,23 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 
-// Configuração do HTTPS
-const options = {
-  key: fs.readFileSync('/etc/letsencrypt/live/geraldo.killers.com.br/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/geraldo.killers.com.br/fullchain.pem')
-};
+let server;
 
-// Criar servidor HTTPS
-const server = https.createServer(options, app);
+if (process.env.NODE_ENV === 'production' && process.env.USE_HTTPS === 'true') {
+  // Configuração do HTTPS para produção
+  const options = {
+    key: fs.readFileSync('/etc/letsencrypt/live/geraldo.killers.com.br/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/geraldo.killers.com.br/fullchain.pem')
+  };
+  server = https.createServer(options, app);
+} else {
+  // Usar HTTP para desenvolvimento
+  server = http.createServer(app);
+}
 
 server.listen(PORT, HOST, () => {
-  // console.log(`Server running on https://${HOST}:${PORT}`);
+  console.log(`Server running on ${process.env.NODE_ENV === 'production' ? 'https' : 'http'}://${HOST}:${PORT}`);
 }); 

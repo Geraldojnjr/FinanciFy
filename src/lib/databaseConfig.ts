@@ -70,7 +70,7 @@ export const getSupabaseClient = () => {
 // Create a Supabase-compatible client that uses MariaDB
 const createMariaDBCompatibleClient = (config: DatabaseConfig) => {
   // Base URL for our MariaDB API middleware
-  const baseApiUrl = window.location.origin + '/api';
+  const baseApiUrl = '/api';
   
   const getHeaders = () => {
     const session = localStorage.getItem('sb-session');
@@ -90,7 +90,7 @@ const createMariaDBCompatibleClient = (config: DatabaseConfig) => {
     }
 
     const dbConfig = {
-      host: config.mariadbHost || '',
+      host: config.mariadbHost || 'mariadb',
       port: config.mariadbPort || '3306',
       user: config.mariadbUser || '',
       password: config.mariadbPassword || '',
@@ -327,7 +327,7 @@ export const getDatabaseClient = (): MariaDBClient => {
   }
 
   return {
-    host: config.mariadbHost || '',
+    host: config.mariadbHost || 'mariadb',
     port: parseInt(config.mariadbPort || '3306'),
     user: config.mariadbUser || '',
     password: config.mariadbPassword || '',

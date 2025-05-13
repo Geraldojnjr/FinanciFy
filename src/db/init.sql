@@ -1,10 +1,19 @@
+-- Criar o usuário e garantir privilégios
+CREATE USER IF NOT EXISTS 'financify_controler'@'%' IDENTIFIED BY 'mksamdkmKMKALDS231';
+CREATE USER IF NOT EXISTS 'financify_controler'@'localhost' IDENTIFIED BY 'mksamdkmKMKALDS231';
+
+-- Criar o banco de dados
+CREATE DATABASE IF NOT EXISTS financify_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Garantir privilégios
+GRANT ALL PRIVILEGES ON financify_db.* TO 'financify_controler'@'%';
+GRANT ALL PRIVILEGES ON financify_db.* TO 'financify_controler'@'localhost';
+FLUSH PRIVILEGES;
+
+USE financify_db;
+
 -- Database schema for financial management application
 -- Compatible with MariaDB and MySQL
-
--- Create database
-CREATE DATABASE IF NOT EXISTS financial_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-USE financial_app;
 
 -- Users table (for authentication)
 CREATE TABLE IF NOT EXISTS users (

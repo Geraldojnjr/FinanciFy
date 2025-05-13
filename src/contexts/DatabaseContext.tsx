@@ -54,7 +54,7 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       try {
         const result = await testMariaDBConnection(
-          configToTest.mariadbHost,
+          configToTest.mariadbHost || 'mariadb',
           configToTest.mariadbPort || "3306",
           configToTest.mariadbDatabase,
           configToTest.mariadbUser,

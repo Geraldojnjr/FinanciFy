@@ -39,7 +39,7 @@ const DatabaseSettings: React.FC = () => {
       type: config.type,
       url: config.url || '',
       apiKey: config.apiKey || '',
-      mariadbHost: config.mariadbHost || '',
+      mariadbHost: config.mariadbHost || 'mariadb',
       mariadbPort: config.mariadbPort || '3306',
       mariadbUser: config.mariadbUser || '',
       mariadbPassword: config.mariadbPassword || '',
@@ -204,7 +204,7 @@ const DatabaseSettings: React.FC = () => {
                       <FormItem>
                         <FormLabel>Host*</FormLabel>
                         <FormControl>
-                          <Input placeholder="localhost" {...field} />
+                          <Input placeholder="mariadb" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

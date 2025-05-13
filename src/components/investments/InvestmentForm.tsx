@@ -82,31 +82,21 @@ export function InvestmentForm({ investment, onSubmit, onCancel }: InvestmentFor
     try {
       setIsSubmitting(true);
       
-      // Função utilitária para converter para YYYY-MM-DD
-      const toDateString = (date: Date | string | undefined) => {
-        if (!date) return null;
-        if (typeof date === 'string') return date;
-        if (date instanceof Date && !isNaN(date.getTime())) {
-          return date.toISOString().split('T')[0];
-        }
-        return null;
-      };
-
       const investmentData = {
         id: investment?.id || uuidv4(),
         name: values.name,
         type: values.type as InvestmentType,
         amount: values.amount,
-        initialDate: toDateString(values.initialDate),
-        dueDate: toDateString(values.dueDate),
+        initialDate: values.initialDate ? values.initialDate.toISOString().split('T')[0] : null,
+        dueDate: values.dueDate ? values.dueDate.toISOString().split('T')[0] : null,
         expectedReturn: values.expectedReturn || 0,
         currentReturn: values.currentReturn || 0,
         categoryId: values.categoryId,
         goalId: values.goalId === 'none' ? null : values.goalId,
         notes: values.notes || "",
         active: true,
-        created_at: investment?.created_at || new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        created_at: investment?.created_at || new Date().toISOString().split('T')[0],
+        updated_at: new Date().toISOString().split('T')[0],
       };
 
       // console.log('Dados do investimento:', investmentData);

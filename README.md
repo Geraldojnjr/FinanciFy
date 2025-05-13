@@ -598,3 +598,99 @@ npm run build
 ## Suporte
 
 Se precisar de ajuda com a configuração, abra uma issue no repositório.
+
+## 🐳 Compilação e Configuração com Docker
+
+### Pré-requisitos
+- Docker
+- Docker Compose
+
+### Configuração do Ambiente
+
+1. Clone o repositório:
+```bash
+git clone https://github.com/seu-usuario/financify.git
+cd financify
+```
+
+2. Configure as variáveis de ambiente:
+```bash
+# Copie o arquivo de exemplo
+cp .env.example .env
+
+# Edite o arquivo .env com suas configurações
+nano .env
+```
+
+### Compilação e Execução
+
+1. Construa as imagens:
+```bash
+docker-compose build
+```
+
+2. Inicie os serviços:
+```bash
+docker-compose up -d
+```
+
+3. Para ver os logs:
+```bash
+# Logs de todos os serviços
+docker-compose logs -f
+
+# Logs de um serviço específico
+docker-compose logs -f frontend
+docker-compose logs -f backend
+docker-compose logs -f mariadb
+```
+
+4. Para parar os serviços:
+```bash
+docker-compose down
+```
+
+### Comandos Úteis
+
+- Reconstruir um serviço específico:
+```bash
+docker-compose up -d --build frontend
+docker-compose up -d --build backend
+```
+
+- Acessar o shell de um container:
+```bash
+docker-compose exec frontend sh
+docker-compose exec backend sh
+docker-compose exec mariadb sh
+```
+
+- Verificar status dos containers:
+```bash
+docker-compose ps
+```
+
+### Portas e Acesso
+
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001
+- MariaDB: localhost:3306
+
+### Solução de Problemas
+
+1. Se encontrar problemas de permissão:
+```bash
+sudo chown -R $USER:$USER .
+```
+
+2. Para limpar todos os containers e volumes:
+```bash
+docker-compose down -v
+```
+
+3. Para reconstruir tudo do zero:
+```bash
+docker-compose down -v
+docker-compose build --no-cache
+docker-compose up -d
+```

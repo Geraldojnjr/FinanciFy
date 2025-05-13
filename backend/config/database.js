@@ -5,11 +5,11 @@ const createConnection = async (config) => {
   try {
     // Use provided config or fallback to environment variables
     const connectionConfig = {
-      host: config?.host || process.env.DB_HOST,
+      host: 'mariadb' || config?.host || process.env.DB_HOST,
       port: parseInt(config?.port || process.env.DB_PORT || '3306'),
-      user: config?.user || process.env.DB_USER,
-      password: config?.password || process.env.DB_PASSWORD,
-      database: config?.database || process.env.DB_NAME,
+      user: config?.user || process.env.DB_USER || 'financify_controler',
+      password: config?.password || process.env.DB_PASSWORD || 'mksamdkmKMKALDS231',
+      database: config?.database || process.env.DB_NAME || 'financify_db',
       // Configurações para suporte a emojis
       charset: 'utf8mb4',
       collation: 'utf8mb4_unicode_ci',
@@ -21,16 +21,16 @@ const createConnection = async (config) => {
       debug: process.env.DB_DEBUG === 'true'
     };
 
-    // console.log('Attempting to connect to database with config:', {
-    //   host: connectionConfig.host,
-    //   port: connectionConfig.port,
-    //   database: connectionConfig.database,
-    //   user: connectionConfig.user,
-    //   charset: connectionConfig.charset,
-    //   collation: connectionConfig.collation,
-    //   connectTimeout: connectionConfig.connectTimeout,
-    //   connectionLimit: connectionConfig.connectionLimit
-    // });
+    console.log('Attempting to connect to database with config:', {
+      host: connectionConfig.host,
+      port: connectionConfig.port,
+      database: connectionConfig.database,
+      user: connectionConfig.user,
+      charset: connectionConfig.charset,
+      collation: connectionConfig.collation,
+      connectTimeout: connectionConfig.connectTimeout,
+      connectionLimit: connectionConfig.connectionLimit
+    });
 
     // Test the connection before returning
     const connection = await mysql.createConnection(connectionConfig);
@@ -45,7 +45,7 @@ const createConnection = async (config) => {
     // Ping the database to ensure connection is working
     await connection.ping();
     
-    // console.log('Database connection established and verified successfully');
+    console.log('Database connection established and verified successfully');
     return connection;
   } catch (error) {
     console.error('Error creating database connection:', {

@@ -106,7 +106,8 @@ const AuthPage: React.FC = () => {
               <CardHeader className={isMobile ? "px-4 py-3" : ""}>
                 <CardTitle>Login</CardTitle>
                 <CardDescription>
-                  Entre com seu email e senha para acessar sua conta
+                  Entre com seu email e senha para acessar sua conta<br />
+                  Versão demo? email: teste@teste senha: teste
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleLogin}>

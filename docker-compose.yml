@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8090:80"
+    depends_on:
+      - backend
+    networks:
+      - financify-network
+    restart: unless-stopped
+    environment:
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=development
+      - USE_HTTPS=false
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - DB_USER=${VITE_MARIADB_USER}
+      - DB_PASSWORD=${VITE_MARIADB_PASSWORD}
+      - DB_NAME=${VITE_MARIADB_DATABASE}
+      - SUPABASE_URL=${VITE_SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+    depends_on:
+      - mariadb
+    networks:
+      - financify-network
+    restart: unless-stopped
+
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      - MARIADB_ROOT_PASSWORD=${VITE_MARIADB_PASSWORD}
+      - MARIADB_DATABASE=${VITE_MARIADB_DATABASE}
+      - MARIADB_USER=${VITE_MARIADB_USER}
+      - MARIADB_PASSWORD=${VITE_MARIADB_PASSWORD}
+      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=no
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./src/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./src/db/full_user_dump.sql:/docker-entrypoint-initdb.d/02-data.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - financify-network
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  mariadb_data:
+    driver: local
+
+networks:
+  financify-network:
+    driver: bridge 
