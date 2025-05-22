@@ -142,474 +142,18 @@ financify-easy-track/
 - **types/**
   - Definições de tipos TypeScript para tipagem estática
 
-## Configuração de Inicialização Automática no Linux
 
-Para configurar o Financify Easy Track para iniciar automaticamente no Linux, siga os passos abaixo:
-
-### 1. Criar os arquivos de serviço
-
-Crie o arquivo `financify-backend.service` na raiz do projeto:
-
-#### financify-backend.service
-```ini
-[Unit]
-Description=Financify Easy Track Backend Service
-After=network.target
-
-[Service]
-Type=simple
-User=root
-WorkingDirectory=/root/financify-easy-track
-ExecStartPre=/usr/bin/npm install
-ExecStartPre=/usr/bin/npm run build
-ExecStart=/usr/bin/npm start
-Restart=always
-RestartSec=10
-StandardOutput=journal
-StandardError=journal
-SyslogIdentifier=financify-backend
-
-[Install]
-WantedBy=multi-user.target 
-```
-
-### 2. Copiar os arquivos de serviço para o systemd
-
-Execute os seguintes comandos como root:
-
-```bash
-# Copiar os arquivos de serviço para o diretório do systemd
-sudo cp financify-backend.service /etc/systemd/system/
-
-# Recarregar os serviços do systemd
-sudo systemctl daemon-reload
-
-# Habilitar os serviços para iniciar na inicialização
-sudo systemctl enable financify-backend.service
-
-# Iniciar os serviços
-sudo systemctl start financify-backend.service
-```
-
-### 3. Verificar o status dos serviços
-
-Para verificar se os serviços estão rodando corretamente:
-
-```bash
-# Verificar status
-sudo systemctl status financify-backend.service
-
-# Verificar logs
-sudo journalctl -u financify-backend.service
-```
-
-### 4. Comandos úteis para gerenciamento
-
-```bash
-# Iniciar serviços
-sudo systemctl start financify-backend.service
-
-# Parar serviços
-sudo systemctl stop financify-backend.service
-
-# Reiniciar serviços
-sudo systemctl restart financify-backend.service
-
-# Desabilitar inicialização automática
-sudo systemctl disable financify-backend.service
-```
-
-### 5. Solução de problemas
-
-Se os serviços não iniciarem corretamente:
-
-1. Verifique os logs:
-```bash
-sudo journalctl -u financify-backend.service -n 50
-```
-
-2. Verifique se os arquivos de serviço foram copiados corretamente:
-```bash
-ls -l /etc/systemd/system/financify-*.service
-```
-
-3. Verifique se o Node.js e npm estão instalados e acessíveis:
-```bash
-which node
-which npm
-```
-
-4. Verifique se as portas necessárias estão disponíveis:
-```bash
-netstat -tulpn | grep -E '8080'
-```
-
-### Observações importantes
-
-- Os serviços estão configurados para executar como root
-- O frontend inicia após o backend para garantir que a API esteja disponível
-- Os serviços reiniciam automaticamente se falharem
-- Os logs são registrados no syslog do sistema
-
-## Compilação e Execução do Projeto
-
-### Compilação
-
-1. Acesse o diretório do projeto:
-```bash
-cd /root/financify-easy-track
-```
-
-2. Instale as dependências (se necessário):
-```bash
-npm install
-```
-
-3. Compile o frontend:
-```bash
-npm run build
-```
-
-### Execução
-
-1. Inicie o serviço:
-```bash
-systemctl start financify-backend
-```
-
-2. Verifique o status:
-```bash
-systemctl status financify-backend
-```
-
-### Atualização
-
-Quando precisar atualizar o sistema:
-
-1. Atualize o código:
-```bash
-cd /root/financify-easy-track
-git pull
-```
-
-2. Recompile o frontend:
-```bash
-npm run build
-```
-
-3. Reinicie o serviço:
-```bash
-systemctl restart financify-backend
-```
-
-### Solução de Problemas na Compilação
-
-Se encontrar problemas durante a compilação:
-
-1. Erro de dependências faltantes:
-```bash
-# Reinstale as dependências
-npm install
-```
-
-2. Erro ao compilar o frontend:
-```bash
-# Limpe a pasta dist (se existir)
-rm -rf dist
-
-# Recompile
-npm run build
-```
-
-3. Erro "ENOENT: no such file or directory, stat '/root/financify-easy-track/dist/index.html'":
-```bash
-# Recompile o frontend
-npm run build
-
-# Reinicie o serviço
-systemctl restart financify-backend
-```
-
-## Configuração HTTPS
+## 🐳 Executando com Docker Compose
 
 ### Pré-requisitos
-- Nginx instalado
-- Domínio configurado apontando para o servidor
-- Certbot instalado
-- Portas 80 e 443 liberadas no firewall
+- Docker instalado
+- Docker Compose instalado
 
-### 1. Instalação do Certbot
-```bash
-sudo apt-get update
-sudo apt-get install certbot python3-certbot-nginx
-```
-
-### 2. Configuração do Nginx
-1. Crie o arquivo de configuração:
-```bash
-sudo nano /etc/nginx/sites-available/financify
-```
-
-2. Adicione a seguinte configuração:
-```nginx
-server {
-    listen 8443 ssl;
-    server_name seu.dominio.com;
-
-    # Certificados SSL
-    ssl_certificate /etc/letsencrypt/live/seu.dominio.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/seu.dominio.com/privkey.pem;
-
-    # Configurações SSL básicas
-    ssl_protocols TLSv1.2 TLSv1.3;
-
-    location / {
-        # Configurações CORS
-        add_header 'Access-Control-Allow-Origin' '*' always;
-        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
-        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization' always;
-        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range' always;
-
-        # Configuração para preflight requests
-        if ($request_method = 'OPTIONS') {
-            add_header 'Access-Control-Allow-Origin' '*';
-            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
-            add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization';
-            add_header 'Access-Control-Max-Age' 1728000;
-            add_header 'Content-Type' 'text/plain; charset=utf-8';
-            add_header 'Content-Length' 0;
-            return 204;
-        }
-
-        proxy_pass http://127.0.0.1:8080;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        
-        # Configurações WebSocket
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        
-        # Timeouts
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
-    }
-
-    # Configuração favicon.ico
-    location = /favicon.ico {
-        access_log off;
-        log_not_found off;
-        return 204;
-    }
-}
-```
-
-3. Crie o link simbólico:
-```bash
-sudo ln -s /etc/nginx/sites-available/financify /etc/nginx/sites-enabled/
-```
-
-### 3. Obtenção dos Certificados SSL
-
-1. Pare temporariamente o nginx:
-```bash
-sudo systemctl stop nginx
-```
-
-2. Obtenha os certificados:
-```bash
-sudo certbot certonly --standalone -d seu.dominio.com
-```
-
-3. Inicie o nginx:
-```bash
-sudo systemctl start nginx
-```
-
-### 4. Configuração da Renovação Automática
-
-1. Teste a renovação automática:
-```bash
-sudo certbot renew --dry-run
-```
-
-2. Configure o crontab:
-```bash
-sudo crontab -e
-```
-
-3. Adicione estas linhas:
-```bash
-# Renovar certificados todo dia às 3:30
-30 3 * * * /usr/bin/certbot renew --quiet
-
-# Reiniciar nginx após a renovação (às 3:35)
-35 3 * * * /usr/bin/systemctl restart nginx
-```
-
-### Solução de Problemas Comuns
-
-#### 1. Erro: "address already in use"
-**Problema**: Porta já está em uso
-**Solução**: 
-```bash
-# Verifique quais processos estão usando a porta
-sudo netstat -tulpn | grep '8443\|8080'
-
-# Pare o serviço que está usando a porta
-sudo systemctl stop [nome-do-servico]
-```
-
-#### 2. Erro: "SSL_CTX_use_PrivateKey_file" ou certificados não encontrados
-**Problema**: Certificados SSL não encontrados ou com permissões incorretas
-**Solução**:
-```bash
-# Verifique se os certificados existem
-ls -l /etc/letsencrypt/live/seu.dominio.com/
-
-# Regenere os certificados se necessário
-sudo certbot delete --cert-name seu.dominio.com
-sudo certbot certonly --standalone -d seu.dominio.com
-```
-
-#### 3. Erro: "Bad Request" ou problemas de CORS
-**Problema**: Configuração CORS incorreta
-**Solução**: Verifique se os headers CORS estão configurados corretamente no bloco `location` do nginx
-
-#### 4. Erro: "Connection refused" ou timeout
-**Problema**: Firewall bloqueando conexões
-**Solução**:
-```bash
-# Verifique o status do firewall
-sudo ufw status
-
-# Permita as portas necessárias
-sudo ufw allow 8443
-sudo ufw allow 8080
-```
-
-### Verificação da Configuração
-
-1. Teste a configuração do nginx:
-```bash
-sudo nginx -t
-```
-
-2. Verifique o status do serviço:
-```bash
-sudo systemctl status nginx
-```
-
-3. Monitore os logs:
-```bash
-sudo tail -f /var/log/nginx/error.log
-```
-
-### Notas Importantes
-
-1. **Segurança**:
-   - Mantenha o sistema e o nginx atualizados
-   - Configure corretamente as permissões dos arquivos
-   - Use senhas fortes e restrinja o acesso quando necessário
-
-2. **Manutenção**:
-   - Monitore a validade dos certificados
-   - Verifique regularmente os logs
-   - Mantenha backups das configurações
-
-3. **Performance**:
-   - Ajuste os timeouts conforme necessário
-   - Configure cache quando apropriado
-   - Monitore o uso de recursos
-
-4. **Compatibilidade**:
-   - Teste em diferentes navegadores
-   - Verifique a compatibilidade com dispositivos móveis
-   - Mantenha suporte a versões antigas do TLS se necessário
-
-## Configuração do Ambiente
-
-### Variáveis de Ambiente
-
-O projeto utiliza variáveis de ambiente para configurações sensíveis. Siga estes passos para configurar:
-
-1. Crie um arquivo `.env` na raiz do projeto
-2. Copie o conteúdo do arquivo `.env.example` (se existir) ou use o template abaixo:
-
-```env
-# Configurações do Banco de Dados MariaDB
-VITE_MARIADB_HOST=seu_host
-VITE_MARIADB_PORT=3306
-VITE_MARIADB_USER=seu_usuario
-VITE_MARIADB_PASSWORD=sua_senha
-VITE_MARIADB_DATABASE=seu_banco
-
-# URL da API
-VITE_MARIADB_API_URL=http://localhost:3000/api
-
-# Configurações do Supabase (opcional)
-VITE_SUPABASE_URL=sua_url_do_supabase
-VITE_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
-```
-
-3. Substitua os valores pelos dados do seu ambiente
-4. **IMPORTANTE**: Nunca comite o arquivo `.env` no repositório
-5. O arquivo `.env` já está incluído no `.gitignore`
-
-### Configuração do Banco de Dados
-
-1. Certifique-se de que o MariaDB está instalado e rodando
-2. Crie um banco de dados com o nome especificado em `VITE_MARIADB_DATABASE`
-3. Crie um usuário com as permissões necessárias
-4. Atualize as variáveis de ambiente com as credenciais corretas
-
-### Configuração do Supabase (Opcional)
-
-Se você estiver usando o Supabase como alternativa ao MariaDB:
-
-1. Crie uma conta no Supabase
-2. Crie um novo projeto
-3. Obtenha a URL e a chave anônima nas configurações do projeto
-4. Atualize as variáveis de ambiente correspondentes
-
-## Desenvolvimento
-
-```bash
-# Instalar dependências
-npm install
-
-# Iniciar servidor de desenvolvimento
-npm run dev
-
-# Construir para produção
-npm run build
-```
-
-## Segurança
-
-- Nunca compartilhe seu arquivo `.env`
-- Mantenha suas credenciais seguras
-- Use diferentes credenciais para desenvolvimento e produção
-- Revise regularmente as permissões do banco de dados
-
-## Suporte
-
-Se precisar de ajuda com a configuração, abra uma issue no repositório.
-
-## 🐳 Compilação e Configuração com Docker
-
-### Pré-requisitos
-- Docker
-- Docker Compose
-
-### Configuração do Ambiente
+### Passos para Execução
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/financify.git
+git clone https://github.com/Geraldojnjr/FinanciFy.git
 cd financify
 ```
 
@@ -622,59 +166,49 @@ cp .env.example .env
 nano .env
 ```
 
-### Compilação e Execução
-
-1. Construa as imagens:
+3. Construa e inicie os containers:
 ```bash
+# Construir as imagens
 docker-compose build
-```
 
-2. Inicie os serviços:
-```bash
+# Iniciar os serviços
 docker-compose up -d
 ```
 
-3. Para ver os logs:
-```bash
-# Logs de todos os serviços
-docker-compose logs -f
-
-# Logs de um serviço específico
-docker-compose logs -f frontend
-docker-compose logs -f backend
-docker-compose logs -f mariadb
-```
-
-4. Para parar os serviços:
-```bash
-docker-compose down
-```
-
-### Comandos Úteis
-
-- Reconstruir um serviço específico:
-```bash
-docker-compose up -d --build frontend
-docker-compose up -d --build backend
-```
-
-- Acessar o shell de um container:
-```bash
-docker-compose exec frontend sh
-docker-compose exec backend sh
-docker-compose exec mariadb sh
-```
-
-- Verificar status dos containers:
+4. Verifique se os serviços estão rodando:
 ```bash
 docker-compose ps
 ```
 
-### Portas e Acesso
+### Acessando a Aplicação
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:3001
+- Frontend: http://localhost:8090
+- Backend API: http://localhost:3000
 - MariaDB: localhost:3306
+
+### Comandos Úteis
+
+```bash
+# Ver logs em tempo real
+docker-compose logs -f
+
+# Ver logs de um serviço específico
+docker-compose logs -f frontend
+docker-compose logs -f backend
+docker-compose logs -f mariadb
+
+# Parar todos os serviços
+docker-compose down
+
+# Reconstruir e reiniciar um serviço específico
+docker-compose up -d --build frontend
+docker-compose up -d --build backend
+
+# Acessar o shell de um container
+docker-compose exec frontend sh
+docker-compose exec backend sh
+docker-compose exec mariadb sh
+```
 
 ### Solução de Problemas
 
@@ -694,3 +228,67 @@ docker-compose down -v
 docker-compose build --no-cache
 docker-compose up -d
 ```
+
+4. Se precisar reiniciar o banco de dados:
+```bash
+docker-compose restart mariadb
+```
+
+5. Para verificar os logs de erro:
+```bash
+docker-compose logs --tail=100 -f
+```
+
+### Estrutura do Docker Compose
+
+O arquivo `docker-compose.yml` configura três serviços principais:
+
+1. **Frontend**:
+   - Porta: 8090
+   - Build: Dockerfile.frontend
+   - Dependências: backend
+
+2. **Backend**:
+   - Porta: 3000
+   - Build: Dockerfile
+   - Dependências: mariadb
+
+3. **MariaDB**:
+   - Porta: 3306
+   - Volume: mariadb_data
+   - Variáveis de ambiente configuráveis
+
+### Manutenção
+
+1. Para atualizar o código:
+```bash
+git pull
+docker-compose up -d --build
+```
+
+2. Para fazer backup do banco de dados:
+```bash
+docker-compose exec mariadb sh -c 'mysqldump -u root -p financify > /backup/financify_$(date +%Y%m%d).sql'
+```
+
+3. Para restaurar um backup:
+```bash
+docker-compose exec mariadb sh -c 'mysql -u root -p financify < /backup/seu_backup.sql'
+```
+
+### Notas Importantes
+
+1. **Segurança**:
+   - Nunca exponha as portas do MariaDB para fora do ambiente Docker
+   - Mantenha as senhas seguras no arquivo .env
+   - Não comite o arquivo .env no repositório
+
+2. **Performance**:
+   - Os containers são configurados com limites de memória e CPU
+   - O MariaDB usa um volume persistente para os dados
+   - O frontend e backend são otimizados para produção
+
+3. **Desenvolvimento**:
+   - Para desenvolvimento, use `docker-compose -f docker-compose.dev.yml up -d`
+   - Os volumes são montados para hot-reload
+   - Os logs são mais detalhados em modo desenvolvimento
