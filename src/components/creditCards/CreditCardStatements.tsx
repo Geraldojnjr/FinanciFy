@@ -31,7 +31,7 @@ export default function CreditCardStatements({
 
   // Filter transactions for this card
   const cardTransactions = transactions.filter((t) => 
-    t.credit_card_id === cardId
+    t.credit_card_id === cardId && t.active !== false
   );
 
   // Group transactions by month/year to create statements
@@ -112,7 +112,7 @@ export default function CreditCardStatements({
                     <div className="mt-4 border-t pt-4">
                       <h4 className="font-medium mb-2">Transações desta fatura</h4>
                       <div className="space-y-2">
-                        {statement.transactions.length > 0 ? (
+                        {statement.transactions && statement.transactions.length > 0 ? (
                           statement.transactions.map((transaction: any) => (
                             <div
                               key={transaction.id}
@@ -124,9 +124,14 @@ export default function CreditCardStatements({
                                   {formatDate(transaction.date)}
                                 </p>
                               </div>
-                              <p className={`font-medium ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                                {formatCurrency(transaction.amount)}
-                              </p>
+                              <div className="text-right">
+                                <p className={`font-medium ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                                  {formatCurrency(transaction.amount)}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {transaction.paid ? 'Pago' : 'Pendente'}
+                                </p>
+                              </div>
                             </div>
                           ))
                         ) : (
@@ -284,8 +289,7 @@ function generateStatements(
         return sum + amount;
       }, 0);
 
-      // Check if all transactions are paid - only include paid transactions in reports
-      const paidTransactions = statementTransactions.filter(t => t.paid === 1 || t.paid === true);
+      // Check if all transactions are paid
       const allTransactionsPaid = statementTransactions.length > 0 && 
         statementTransactions.every(t => t.paid === 1 || t.paid === true);
 
@@ -320,14 +324,11 @@ function generateStatements(
         closingDate,
         dueDate,
         totalAmount,
-        transactionCount: paidTransactions.length, // Only count paid transactions
+        transactionCount: statementTransactions.length,
         status,
         transactions: statementTransactions,
         allTransactionsPaid,
-        paidAmount: paidTransactions.reduce((sum, t) => {
-          const amount = typeof t.amount === 'number' ? t.amount : Number(t.amount) || 0;
-          return sum + amount;
-        }, 0)
+        paidAmount: totalAmount
       });
     } catch (error) {
       console.error('Erro ao gerar fatura:', error);

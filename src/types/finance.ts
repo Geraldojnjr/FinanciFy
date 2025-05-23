@@ -44,6 +44,7 @@ export interface Transaction {
   credit_card_id?: string;
   installments?: number;
   current_installment?: number;
+  active?: boolean;
   paid: boolean;
   parent_transaction_id?: string;
   notes?: string;
