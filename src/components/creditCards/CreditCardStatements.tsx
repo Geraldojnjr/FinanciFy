@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { CreditCardStatementsProps } from '@/types/finance';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 // Função auxiliar para validar e formatar a data
 const getValidDateString = (date: Date): string => {
@@ -22,9 +24,10 @@ const getValidDateString = (date: Date): string => {
 export default function CreditCardStatements({
   cardId,
 }: CreditCardStatementsProps) {
-  const { creditCards, transactions, updateTransaction } = useFinance();
+  const { creditCards, transactions, updateTransaction, accounts } = useFinance();
   const [isPaying, setIsPaying] = useState<string | null>(null);
   const [selectedStatement, setSelectedStatement] = useState<string | null>(null);
+  const [selectedAccount, setSelectedAccount] = useState<string>("");
   const card = creditCards.find((c) => c.id === cardId);
 
   if (!card) return null;
@@ -40,6 +43,11 @@ export default function CreditCardStatements({
   // Function to pay all transactions in a statement
   const handlePayStatement = async (statement: any) => {
     try {
+      if (!selectedAccount) {
+        toast.error("Por favor, selecione uma conta para pagar a fatura");
+        return;
+      }
+
       setIsPaying(getValidDateString(statement.period.start));
       
       // Filter only unpaid transactions in the statement
@@ -50,17 +58,19 @@ export default function CreditCardStatements({
         return;
       }
       
-      // Update each transaction as paid
+      // Update each transaction as paid and link to the selected account
       const updatePromises = unpaidTransactions.map((transaction: any) => {
         return updateTransaction({
           ...transaction,
-          paid: true
+          paid: true,
+          account_id: selectedAccount
         });
       });
       
       await Promise.all(updatePromises);
       
       toast.success(`Fatura de ${format(statement.period.start, "MMMM/yyyy", { locale: ptBR })} paga com sucesso!`);
+      setSelectedAccount(""); // Reset selected account
     } catch (error) {
       console.error("Erro ao pagar fatura:", error);
       toast.error("Erro ao pagar fatura. Tente novamente.");
@@ -149,7 +159,7 @@ export default function CreditCardStatements({
                       {statement.transactionCount}
                     </p>
                     
-                    {statement.status === "A pagar" && !statement.allTransactionsPaid && (
+                    {(statement.status === "A pagar" || statement.status === "Fechada" || statement.status === "Vencida") && !statement.allTransactionsPaid && (
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button 
@@ -175,9 +185,34 @@ export default function CreditCardStatements({
                               Isso afetará {statement.transactions.filter((t: any) => !t.paid).length} transações.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
+                          
+                          <div className="py-4">
+                            <Label htmlFor="account">Selecione a conta para pagar a fatura:</Label>
+                            <Select
+                              value={selectedAccount}
+                              onValueChange={setSelectedAccount}
+                            >
+                              <SelectTrigger className="w-full mt-2">
+                                <SelectValue placeholder="Selecione uma conta" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {accounts
+                                  .filter(account => account.type === 'checking' || account.type === 'savings')
+                                  .map(account => (
+                                    <SelectItem key={account.id} value={account.id}>
+                                      {account.name} - {formatCurrency(account.balance)}
+                                    </SelectItem>
+                                  ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handlePayStatement(statement)}>
+                            <AlertDialogCancel onClick={() => setSelectedAccount("")}>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handlePayStatement(statement)}
+                              disabled={!selectedAccount}
+                            >
                               Confirmar
                             </AlertDialogAction>
                           </AlertDialogFooter>
